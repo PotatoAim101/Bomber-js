@@ -45,7 +45,7 @@ function drawObstacles(matrix) {
 //le joueur avec une position et des bombs (j'ai pas encore géré)
 var player = {
 	position: {x: 0.5, y: 0.5}, //position initiale
-	bomb: 0,
+	bomb: true,
 }
 
 //Dessine un cercle pour le joueur
