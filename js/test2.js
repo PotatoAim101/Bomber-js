@@ -78,26 +78,26 @@ function movePlayer(player, matrix) {
 	document.addEventListener('keydown', event => {
 		// console.log("--------------" + matrix[2][0])
 		if (event.keyCode == 38) {
-			if ((player.position.y-1 > 0) && ((matrix[player.position.y-1.5][player.position.x-0.5]) != 1))
+			if ((player.position.y-1 > 0) && ((matrix[player.position.y-1.5][player.position.x-0.5]) == 0))
 				player.position.y--;
 			console.log(matrix[player.position.y-1.5][player.position.x-0.5]);
 			//console.log("x = " + player.position.x + "y = " + player.position.y)
 		}
 		
 		else if (event.keyCode == 40) {
-			if ((player.position.y+1 < matrix.length) && ((matrix[player.position.y+0.5][player.position.x-0.5]) != 1))
+			if ((player.position.y+1 < matrix.length) && ((matrix[player.position.y+0.5][player.position.x-0.5]) == 0))
 				player.position.y++;
 			//console.log("x = " + player.position.x + " y= " + player.position.y)
 		}
 		
 		else if (event.keyCode == 39) {
-			if ((player.position.x+1 < matrix.length) && ((matrix[player.position.y-0.5][player.position.x+0.5]) != 1))
+			if ((player.position.x+1 < matrix.length) && ((matrix[player.position.y-0.5][player.position.x+0.5]) == 0))
 				player.position.x++;
 			// console.log("x = " + player.position.x + " y= " + player.position.y)
 		}
 		
 		else if (event.keyCode == 37) {
-			if ((player.position.x-1 > 0) && ((matrix[player.position.y-0.5][player.position.x-1.5]) != 1))
+			if ((player.position.x-1 > 0) && ((matrix[player.position.y-0.5][player.position.x-1.5]) == 0))
 				player.position.x--;
 			// console.log("x = " + player.position.x + "y = " + player.position.y)
 		}
