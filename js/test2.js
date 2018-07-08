@@ -2,12 +2,18 @@
 const canvas = document.getElementById('bomber');
 const context = canvas.getContext('2d');
 
+
 //donner la couleur et afficher
 context.fillStyle = "#693647";
 context.fillRect(0, 0, canvas.width, canvas.height);
 
+
 //les obstacles en forme de tableau 
-// 1 --> non destructibles, 2 --> destructible
+/* 0 --> vide
+   1 --> obstacle non destructible
+   2 --> obstacle destructibe
+   3 --> bomb
+  */
 const obstacleMatrix = [
 	[0, 0, 2, 0, 0, 0, 1, 0, 0, 0],
 	[0, 1, 1, 1, 2, 0, 1, 0, 0, 0],
@@ -21,11 +27,13 @@ const obstacleMatrix = [
 	[0, 0, 0, 2, 1, 0, 0, 1, 0, 0],
 ];
 
+
 //pour pouvoir afficher à la bonne taille
 //il suffit de changer les cases du tableau et la taille change automatiquement
 //le canvas est carré donc il faut un tavleau carré aussi
 tailleObstacle = canvas.width/obstacleMatrix.length;
 context.scale(tailleObstacle, tailleObstacle)
+
 
 //dessine les obstacles
 function drawObstacles(matrix) {
@@ -42,11 +50,13 @@ function drawObstacles(matrix) {
 	});
 }
 
+
 //le joueur avec une position et des bombs (j'ai pas encore géré)
 var player = {
 	position: {x: 0.5, y: 0.5}, //position initiale
 	bomb: true,
 }
+
 
 //Dessine un cercle pour le joueur
 //pour être au milieu de la case il faut 0.5
@@ -56,6 +66,7 @@ function drawPlayer(x, y, color) {
 	context.fillStyle = color;
 	context.fill();
 }
+
 
 function draw() {
 	//on doit clear avant
@@ -67,12 +78,14 @@ function draw() {
 	drawPlayer(player.position.x, player.position.y, 'pink');
 }
 
+
 //keys : up, down, right, left
 function movePlayer(player, matrix) {
 	/* up : 38
 	   down : 40
 	   right : 39
 	   left : 37 
+	   space : 32
 	*/
 	// console.log("--------------" + matrix[2][0])
 	document.addEventListener('keydown', event => {
@@ -104,6 +117,18 @@ function movePlayer(player, matrix) {
 	});
 }
 
+
+document.addEventListener('keydown', event => {
+	if (event.keyCode == 32) {
+		document.addEventListener('keydown', event => {
+			if (event.keyCode == 32) {
+				
+			}
+});
+	}
+});
+
+
 // /!\ il faut pas mettre movePlayer dans update
 movePlayer(player, obstacleMatrix);
 function update() {
@@ -111,7 +136,9 @@ function update() {
 	requestAnimationFrame(update);
 }
 
+
 update();
+
 
 /*//pour trouver le keycode
 document.addEventListener('keydown', event => {
