@@ -165,7 +165,7 @@ function managingBombs(player, matrix) {
 
 // /!\ faut la modifier, marche pas
 
-managingBombs(player, obstacleMatrix);
+//managingBombs(player, obstacleMatrix);
 movePlayer(player, obstacleMatrix);
 function update() {
 	draw();
