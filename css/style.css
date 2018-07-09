@@ -5,3 +5,9 @@ body {
    width: 100%;
    text-align:center;
 }
+
+p {
+	font-family: Comic Sans MS;
+	color: brown;
+	font-size: 20px;
+}
