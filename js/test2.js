@@ -180,3 +180,47 @@ update();
 document.addEventListener('keydown', event => {
 	console.log(event);
 });*/
+
+
+
+
+
+//////////////////////////// USELESS
+// Titre par défaut
+var titlebase = function()
+{
+	return document.querySelector("#canvasDiv > p").innerHTML;
+}();
+
+// anime le texte en fonction des touches appuyées
+document.addEventListener('keydown', event => {
+	
+	// Titre
+	// <id=canvasDiv><p>Titre</p></>
+	var ele = document.querySelector("#canvasDiv > p");
+	var txt = ele.innerHTML;
+	var c = 0;
+
+	switch(event.keyCode)
+	{
+		/* up : 38
+	   down : 40
+	   right : 39
+	   left : 37 
+	   space : 32
+		*/
+
+		case 38: c = '↑'; break;
+		case 40: c = '↓'; break;
+		case 39: c = '→'; break;
+		case 37: c = '←'; break;
+		default:
+		break;
+	}
+
+	if(c != 0)
+	{
+		var parts = titlebase.split(c);
+		ele.innerHTML = parts[0] + "<span style='background-color: red;'>" + c + "</span>" + parts[1];
+	}
+});
