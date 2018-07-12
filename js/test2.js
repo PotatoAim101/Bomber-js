@@ -185,7 +185,7 @@ document.addEventListener('keydown', event => {
 
 
 
-//////////////////////////// USELESS
+//////////////////////////// USELESS *not*
 // Titre par défaut
 var titlebase = function()
 {
@@ -221,6 +221,6 @@ document.addEventListener('keydown', event => {
 	if(c != 0)
 	{
 		var parts = titlebase.split(c);
-		ele.innerHTML = parts[0] + "<span style='background-color: red;'>" + c + "</span>" + parts[1];
+		ele.innerHTML = parts[0] + "<span style='background-color: pink;'>" + c + "</span>" + parts[1];
 	}
 });
