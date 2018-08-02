@@ -160,7 +160,7 @@ spaceleft = false;
 spaceright = false;
 
 var keys = [];
-function keysPressed(e) { //j'aurai préférer utiliser les fonction directemen ici mais j'ai pa réussi a mettre à la fonction d'autres arguments
+function keysPressed(e) { //j'aurai préférer utiliser les fonction directement ici mais j'ai pa réussi a mettre à la fonction d'autres arguments
     /* store an entry for every key pressed */
     keys[e.keyCode] = true;
     
@@ -252,10 +252,78 @@ function managePlayer(player, matrix) {
 }
 
 
+//pour pouvoir trouver le delta du temps
+var lastTime = 0;
+var explosionInterval = 1000; // on explose tous les 1sec, à changer si c'est trop rapide
+var explosionCounter = 0; // pour comter le temps passé
 
+//retourne un array avec les indexes des points équivalents a la valeur
+function searchAround(matrix, y, x, value){
+	var res = [];
+	var testArray = [
+		[-1, -1], [-1, 0], [-1, 1],
+		[0, -1], [0, 1],
+		[1, -1], [1, 0], [1, 1],
+	];
+	
+	var tmpX;
+	var tmpY;
+	for (i=0; i<testArray.length; i++){
+		tmpX = x + testArray[i][1]
+		tmpY = y + testArray[i][0]
+		
+		if (tmpX>=0 && tmpX<matrix.length && tmpY>=0 && tmpY<matrix.length) {
+			if (matrix[tmpY][tmpX] == value)
+				res.push([tmpY, tmpX]);
+		}
+	}
+	
+	return res;
+}
 
+//explose les obstacles destructibles et les joueurs autour de la bombe
+function explosion(matrix, player) {
+	matrix.forEach((row, y) => {
+		row.forEach((value, x) => {
+			if (value == 3) {
+				//pour les obstacles
+				var destructibleObstacles = searchAround(obstacleMatrix, y, x, 2);
+				if(destructibleObstacles.length != 0) {
+					for (i=0; i<destructibleObstacles.length; i++) {
+						y = destructibleObstacles[i][0];
+						x = destructibleObstacles[i][1];
+						
+						matrix[y][x] = 0;
+					}
+				}
+				
+				//pour les joueurs
+				var testArray = [
+					[-1, -1], [-1, 0], [-1, 1],
+					[0, -1], [0, 1],
+					[1, -1], [1, 0], [1, 1],
+				];
+				for (k=0; k<testArray.length; k++){
+					if ((player.position.y == testArray[k][0]) && (player.position.x == testArray[k][1]))
+						player.alive = false;
+				}
+			}
+		});
+	});
+}
 
-function update() {
+function update(time = 0) {
+	const deltaTime = time - lastTime;
+	lastTime = time;
+	// console.log(deltaTime);
+	
+	// la fonction explosion marche pas (explosionCounter n'est pas remise à 0) j'ai mis le code directement dans update
+	explosionCounter += deltaTime; // compteur du temps passé
+	if (explosionCounter > explosionInterval) {
+		explosion(obstacleMatrix, player);
+		explosionCounter = 0;
+	}
+	
 	draw();
 	managePlayer(player, obstacleMatrix);
 	requestAnimationFrame(update);
