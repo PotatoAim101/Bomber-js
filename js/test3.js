@@ -337,6 +337,7 @@ update();
 
 
 
+
 // /*//pour trouver le keycode
 // document.addEventListener('keydown', event => {
 	// console.log(event);
