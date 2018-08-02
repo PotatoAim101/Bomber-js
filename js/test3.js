@@ -286,6 +286,9 @@ function explosion(matrix, player) {
 	matrix.forEach((row, y) => {
 		row.forEach((value, x) => {
 			if (value == 3) {
+				//on supprime la bombe, on pourra mettre un effet ici
+				matrix[y][x] = 0;
+				
 				//pour les obstacles
 				var destructibleObstacles = searchAround(obstacleMatrix, y, x, 2);
 				if(destructibleObstacles.length != 0) {
