@@ -95,7 +95,7 @@ function moveUp(player, matrix) {
 		player.position.y--;
 	else {
 		// console.log(matrix[player.position.y-1.5][player.position.x-0.5]);
-		console.log("x = " + player.position.x + "y = " + player.position.y);
+		// console.log("x = " + player.position.x + "y = " + player.position.y);
 	}
 }
 function moveDown(player, matrix) {
@@ -254,7 +254,7 @@ function managePlayer(player, matrix) {
 
 //pour pouvoir trouver le delta du temps
 var lastTime = 0;
-var explosionInterval = 1000; // on explose tous les 1sec, à changer si c'est trop rapide
+var explosionInterval = 1800; // on explose tous les 1.8sec, à changer si c'est trop rapide
 var explosionCounter = 0; // pour comter le temps passé
 
 //retourne un array avec les indexes des points équivalents a la valeur
@@ -281,16 +281,47 @@ function searchAround(matrix, y, x, value){
 	return res;
 }
 
+//vérifie si le joueur est proche de la bombe
+function checkIndexPlayer(matrix, x, y, player){
+	var testArray = [
+		[-1, -1], [-1, 0], [-1, 1],
+		[0, -1], [0, 1],
+		[1, -1], [1, 0], [1, 1],
+	];
+	
+	var tmpX;
+	var tmpY;
+	for (i=0; i<testArray.length; i++){
+		/* console.log("OG = " + x + " " + y); */
+		tmpX = x + testArray[i][1]
+		tmpY = y + testArray[i][0]
+		
+		if (tmpX>=0 && tmpX<matrix.length && tmpY>=0 && tmpY<matrix.length) {
+			console.log(tmpX + " " + tmpY);
+			console.log("------1--" + player.position.y + " " + player.position.x);
+			if ((player.position.y - 0.5 == tmpY) && (player.position.x - 0.5 == tmpX)){
+				player.alive = false;
+				/* console.log("------2--" + player.position.y + " " + player.position.x); */
+				/* console.log("test3"); */
+			}
+		}
+	}
+}
+
 //explose les obstacles destructibles et les joueurs autour de la bombe
 function explosion(matrix, player) {
 	matrix.forEach((row, y) => {
 		row.forEach((value, x) => {
 			if (value == 3) {
+				/* console.log("OG1 = " + x + " " + y); */
 				//on supprime la bombe, on pourra mettre un effet ici
 				matrix[y][x] = 0;
 				
+				//pour les joueurs
+				checkIndexPlayer(obstacleMatrix, x, y, player);
+				
 				//pour les obstacles
-				var destructibleObstacles = searchAround(obstacleMatrix, y, x, 2);
+				var destructibleObstacles = searchAround(matrix, y, x, 2);
 				if(destructibleObstacles.length != 0) {
 					for (i=0; i<destructibleObstacles.length; i++) {
 						y = destructibleObstacles[i][0];
@@ -299,42 +330,39 @@ function explosion(matrix, player) {
 						matrix[y][x] = 0;
 					}
 				}
-				
-				//pour les joueurs
-				var testArray = [
-					[-1, -1], [-1, 0], [-1, 1],
-					[0, -1], [0, 1],
-					[1, -1], [1, 0], [1, 1],
-				];
-				for (k=0; k<testArray.length; k++){
-					if ((player.position.y == testArray[k][0]) && (player.position.x == testArray[k][1]))
-						player.alive = false;
-				}
 			}
 		});
 	});
 }
 
 function update(time = 0) {
-	const deltaTime = time - lastTime;
-	lastTime = time;
-	// console.log(deltaTime);
-	
-	// la fonction explosion marche pas (explosionCounter n'est pas remise à 0) j'ai mis le code directement dans update
-	explosionCounter += deltaTime; // compteur du temps passé
-	if (explosionCounter > explosionInterval) {
-		explosion(obstacleMatrix, player);
-		explosionCounter = 0;
+	if (player.alive) {
+		const deltaTime = time - lastTime;
+		lastTime = time;
+		// console.log(deltaTime);
+		
+		// la fonction explosion marche pas (explosionCounter n'est pas remise à 0) j'ai mis le code directement dans update
+		explosionCounter += deltaTime; // compteur du temps passé
+		if (explosionCounter > explosionInterval) {
+			explosion(obstacleMatrix, player);
+			// console.log("alive = " + player.alive);
+			explosionCounter = 0;
+		}
+		
+		draw();
+		managePlayer(player, obstacleMatrix);
+		requestAnimationFrame(update);
 	}
-	
-	draw();
-	managePlayer(player, obstacleMatrix);
-	requestAnimationFrame(update);
+	else {
+		context.fillStyle = "#693647";
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		
+		document.getElementById("canvasDiv").innerHTML = "<h2>Game Over..</h2>";
+	}
 }
-
+ 
 
 update();
-
 
 
 
@@ -349,6 +377,7 @@ update();
 
 //////////////////////////// USELESS *not*
 // Titre par défaut
+// if (player.alive) { //marche pas ici mais enbas ça marche, après avoir affiché "Game Over" si on appuit surles touches, la phrase réapparait
 var titlebase = function()
 {
 	return document.querySelector("#canvasDiv > p").innerHTML;
@@ -380,9 +409,10 @@ document.addEventListener('keydown', event => {
 		break;
 	}
 
-	if(c != 0)
+	if((c != 0) && player.alive)
 	{
 		var parts = titlebase.split(c);
 		ele.innerHTML = parts[0] + "<span style='background-color: pink;'>" + c + "</span>" + parts[1];
 	}
 });
+// }
