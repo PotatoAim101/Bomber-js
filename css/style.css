@@ -1,6 +1,7 @@
 body {
 	background-color: #fff9e6;
 }
+
 #canvasDiv {
    width: 100%;
    text-align:center;
@@ -10,4 +11,10 @@ p {
 	font-family: Comic Sans MS;
 	color: brown;
 	font-size: 20px;
+}
+
+h2 {
+	font-family: Comic Sans MS;
+	color: #693647;
+	font-size: 40px;
 }
