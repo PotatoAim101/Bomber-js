@@ -65,6 +65,25 @@ var player = {
 	position: {x: 9.5, y: 0.5}, //position initiale
 	bomb: true,
 	alive: true,
+	color: "pink",
+}
+var bot1 = {
+	position: {x: 0.5, y: 0.5}, //position initiale
+	bomb: true,
+	alive: true,
+	color: "#ffff66",
+}
+var bot2 = {
+	position: {x: 0.5, y: 9.5}, //position initiale
+	bomb: true,
+	alive: true,
+	color: "#cc99ff",
+}
+var bot3 = {
+	position: {x: 9.5, y: 9.5}, //position initiale
+	bomb: true,
+	alive: true,
+	color: "#99ff99",
 }
 
 
@@ -85,7 +104,13 @@ function draw() {
 	
 	//puis on dessine les obstacle et le joueur
 	drawObstacles(obstacleMatrix);
-	drawPlayer(player.position.x, player.position.y, 'pink');
+	drawPlayer(player.position.x, player.position.y, player.color);
+	if (bot1.alive)
+		drawPlayer(bot1.position.x, bot1.position.y, bot1.color);
+	if (bot2.alive)
+		drawPlayer(bot2.position.x, bot2.position.y, bot2.color);
+	if (bot3.alive)
+		drawPlayer(bot3.position.x, bot3.position.y, bot3.color);
 }
 
 
@@ -254,7 +279,11 @@ function managePlayer(player, matrix) {
 
 //pour pouvoir trouver le delta du temps
 var lastTime = 0;
-var explosionInterval = 1800; // on explose tous les 1.8sec, à changer si c'est trop rapide
+//toute les x sec on explose toutes les bombes posé (la bombe peut être posé récemment mais si elle est posé à la fin de l'intervalle choisit elle expolose quand même)
+//donc j'ai pas mis de comptoire séparé pour chaque bombe
+//ça rajoute un facteur de chance qui est bien mais si vous aimez pas n peut changer
+//une solution qui me plait serait de resreindre le mouvement selon l'intervalle aussi
+var explosionInterval = 3000; // on explose tous les 1.8sec, à changer si c'est trop rapide
 var explosionCounter = 0; // pour comter le temps passé
 
 //retourne un array avec les indexes des points équivalents a la valeur
@@ -319,6 +348,9 @@ function explosion(matrix, player) {
 				
 				//pour les joueurs
 				checkIndexPlayer(obstacleMatrix, x, y, player);
+				checkIndexPlayer(obstacleMatrix, x, y, bot1);
+				checkIndexPlayer(obstacleMatrix, x, y, bot2);
+				checkIndexPlayer(obstacleMatrix, x, y, bot3);
 				
 				//pour les obstacles
 				var destructibleObstacles = searchAround(matrix, y, x, 2);
@@ -352,6 +384,13 @@ function update(time = 0) {
 		draw();
 		managePlayer(player, obstacleMatrix);
 		requestAnimationFrame(update);
+		
+		if (!bot1.alive && !bot2.alive && !bot3.alive) {
+			context.fillStyle = "#693647";
+			context.fillRect(0, 0, canvas.width, canvas.height);
+		
+			document.getElementById("canvasDiv").innerHTML = "<h2>Well Played !</h2>";
+		}
 	}
 	else {
 		context.fillStyle = "#693647";
@@ -377,7 +416,7 @@ update();
 
 //////////////////////////// USELESS *not*
 // Titre par défaut
-// if (player.alive) { //marche pas ici mais enbas ça marche, après avoir affiché "Game Over" si on appuit surles touches, la phrase réapparait
+// if (player.alive) { //marche pas ici mais en bas ça marche, après avoir affiché "Game Over" si on appuit surles touches, la phrase réapparait
 var titlebase = function()
 {
 	return document.querySelector("#canvasDiv > p").innerHTML;
