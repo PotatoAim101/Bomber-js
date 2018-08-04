@@ -2,6 +2,10 @@ body {
 	background-color: #fff9e6;
 }
 
+canvas {
+	border: 3px solid #391313;
+}
+
 #canvasDiv {
    width: 100%;
    text-align:center;
