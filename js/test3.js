@@ -280,11 +280,13 @@ function managePlayer(player, matrix) {
 //pour pouvoir trouver le delta du temps
 var lastTime = 0;
 //toute les x sec on explose toutes les bombes posé (la bombe peut être posé récemment mais si elle est posé à la fin de l'intervalle choisit elle expolose quand même)
-//donc j'ai pas mis de comptoire séparé pour chaque bombe
-//ça rajoute un facteur de chance qui est bien mais si vous aimez pas n peut changer
-//une solution qui me plait serait de resreindre le mouvement selon l'intervalle aussi
-var explosionInterval = 3000; // on explose tous les 1.8sec, à changer si c'est trop rapide
+//alors il faut resreindre le mouvement selon l'intervalle aussi
+//pour être plus régulier il faut que se soit un multiple de 16.6 = deltaTime
+//a changer, pas 100% beau, mouvements bizarre s
+var explosionInterval = 1.67 * 2000; // on explose tous les 1.8sec, à changer si c'est trop rapide
 var explosionCounter = 0; // pour comter le temps passé
+var movingInterval = explosionInterval/(1.67 * 5);
+var movingCounter = 0;
 
 //retourne un array avec les indexes des points équivalents a la valeur
 function searchAround(matrix, y, x, value){
@@ -367,22 +369,39 @@ function explosion(matrix, player) {
 	});
 }
 
+
 function update(time = 0) {
 	if (player.alive) {
 		const deltaTime = time - lastTime;
 		lastTime = time;
 		// console.log(deltaTime);
 		
-		// la fonction explosion marche pas (explosionCounter n'est pas remise à 0) j'ai mis le code directement dans update
+		////////////// pour prévenir les joueurs du temps d'explosion
+		//evite de se tuer
+		if (explosionCounter<(explosionInterval/6) && explosionCounter>=0)
+			document.getElementById("explosionCounter").innerHTML = "Explosion in: 3";
+		else if (explosionCounter<(explosionInterval/3) && explosionCounter>=(explosionInterval/6))
+			document.getElementById("explosionCounter").innerHTML = "Explosion in: 2";
+		else if (explosionCounter<(explosionInterval/1.5) && explosionCounter>=(explosionInterval/3))
+			document.getElementById("explosionCounter").innerHTML = "Explosion in: 1";
+		else if (explosionCounter<explosionInterval && explosionCounter>=(explosionInterval/1.3))
+			document.getElementById("explosionCounter").innerHTML = "<span style='background-color: #ff3333; color: white;'>Explosion in: 0</span>";
+		//////////////
+		
 		explosionCounter += deltaTime; // compteur du temps passé
 		if (explosionCounter > explosionInterval) {
 			explosion(obstacleMatrix, player);
-			// console.log("alive = " + player.alive);
 			explosionCounter = 0;
 		}
 		
 		draw();
-		managePlayer(player, obstacleMatrix);
+		
+		movingCounter += deltaTime;
+		if (movingCounter > movingInterval) {
+			managePlayer(player, obstacleMatrix);
+			movingCounter = 0;
+		}
+		
 		requestAnimationFrame(update);
 		
 		if (!bot1.alive && !bot2.alive && !bot3.alive) {
