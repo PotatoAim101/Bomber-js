@@ -85,6 +85,10 @@ var bot3 = {
 	alive: true,
 	color: "#99ff99",
 }
+// var allBots = [];
+// allBots.push(bot1);
+// allBots.push(bot2);
+// allBots.push(bot3);
 
 
 //Dessine un cercle pour le joueur
@@ -378,14 +382,14 @@ function update(time = 0) {
 		
 		////////////// pour prévenir les joueurs du temps d'explosion
 		//evite de se tuer
-		if (explosionCounter<(explosionInterval/6) && explosionCounter>=0)
+		if (explosionCounter<(explosionInterval*0.25) && explosionCounter>=0)
 			document.getElementById("explosionCounter").innerHTML = "Explosion in: 3";
-		else if (explosionCounter<(explosionInterval/3) && explosionCounter>=(explosionInterval/6))
+		else if (explosionCounter<(explosionInterval*0.5) && explosionCounter>=(explosionInterval*0.25))
 			document.getElementById("explosionCounter").innerHTML = "Explosion in: 2";
-		else if (explosionCounter<(explosionInterval/1.5) && explosionCounter>=(explosionInterval/3))
+		else if (explosionCounter<(explosionInterval*0.75) && explosionCounter>=(explosionInterval*0.5))
 			document.getElementById("explosionCounter").innerHTML = "Explosion in: 1";
-		else if (explosionCounter<explosionInterval && explosionCounter>=(explosionInterval/1.3))
-			document.getElementById("explosionCounter").innerHTML = "<span style='background-color: #ff3333; color: white;'>Explosion in: 0</span>";
+		else if (explosionCounter<explosionInterval && explosionCounter>=(explosionInterval*0.75))
+			document.getElementById("explosionCounter").innerHTML = "<span style='background-color: #ff3333; color: white; border-radius: 10px; padding-right: 4px; padding-left: 4px;'>Explosion in: 0</span>";
 		//////////////
 		
 		explosionCounter += deltaTime; // compteur du temps passé
@@ -421,7 +425,7 @@ function update(time = 0) {
  
 
 update();
-
+ 
 
 
 // /*//pour trouver le keycode
