@@ -379,7 +379,7 @@ function update(time = 0) {
 		////////////// pour prévenir les joueurs du temps d'explosion
 		//evite de se tuer
 		if (explosionCounter<(explosionInterval/6) && explosionCounter>=0)
-			document.getElementById("explosionCounter").innerHTML = "<p>Explosion in: 3</p>";
+			document.getElementById("explosionCounter").innerHTML = "Explosion in: 3";
 		else if (explosionCounter<(explosionInterval/3) && explosionCounter>=(explosionInterval/6))
 			document.getElementById("explosionCounter").innerHTML = "Explosion in: 2";
 		else if (explosionCounter<(explosionInterval/1.5) && explosionCounter>=(explosionInterval/3))
