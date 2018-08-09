@@ -511,8 +511,9 @@ function pickOpponent(bot, otherPlayers) {
 
 function runAway(matrix, bot) {
 	var tabAround = searchAround(matrix, bot.position.y-0.5, bot.position.x-0.5, 3);
-	if (tabAround.lenght != 0) {
+	if (tabAround.length != 0) {
 		//si il y a plus qu'une bomb autour de lui je le laisse mourrire
+		// console.log("leng = " + tabAround.length);
 		var squares = squaresInOppositeDirection(bot.position.x-0.5, bot.position.y-0.5, tabAround[0][0], tabAround[0][1]);
 		//choisir un carré random
 		var tmp = randomValue(squares.length, 0)
