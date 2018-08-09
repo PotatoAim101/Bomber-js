@@ -85,14 +85,20 @@ var bot3 = {
 	alive: true,
 	color: "#99ff99",
 }
-// var allBots = [];
-// allBots.push(bot1);
-// allBots.push(bot2);
-// allBots.push(bot3);
+var allPlayers = [];
+allPlayers.push(player);
+allPlayers.push(bot1);
+allPlayers.push(bot2);
+allPlayers.push(bot3);
+var allBots = [];
+allBots.push(bot1);
+allBots.push(bot2);
+allBots.push(bot3);
 
 
 //Dessine un cercle pour le joueur
-//pour être au milieu de la case il faut 0.5
+//pour être 
+// au milieu de la case il faut 0.5
 function drawPlayer(x, y, color) {
 	context.beginPath();
 	context.arc(x, y, 0.3, 0, 2 * Math.PI, false);
@@ -320,7 +326,7 @@ function searchAround(matrix, y, x, value){
 function checkIndexPlayer(matrix, x, y, player){
 	var testArray = [
 		[-1, -1], [-1, 0], [-1, 1],
-		[0, -1], [0, 1],
+		[0, -1], [0, 0], [0, 1],
 		[1, -1], [1, 0], [1, 1],
 	];
 	
@@ -373,6 +379,180 @@ function explosion(matrix, player) {
 	});
 }
 
+/////////////////////////////////////////////////////////////////////////
+///////////////////////////   bot functions   ///////////////////////////
+
+
+function randomValue(max, min) {
+	return Math.random() * (max - min) + min;
+}
+
+function getDistance(x1, x2, y1, y2) {
+	return sqrt(pow((x1 - x2), 2)+ pow((y1 - y2), 2));
+}
+
+function squaresInDirection(positionBotX, positionBotY, positionOpponenetX, positionOpponenetY){
+	var searchTab = [];
+	x = positionOpponenetX - positionBotX;
+	y = positionOpponenetY - positionBotY;
+	
+	//<= ??
+	if ((x<0) && (y<0)) {
+		searchTab = [
+			[-1, -1], [-1, 0], 
+			[0, -1],
+		];
+	}
+	if ((x>o) && (y<0)) {
+		searchTab = [
+			[0, -1], [-1, 1], 
+					 [0, 1],
+		];
+	}
+	if ((x>o) && (y>0)) {
+		searchTab = [
+					[0, 1],
+			[1, 0], [1, 1],
+		];
+	}
+	if ((x<o) && (y>0)) {
+		searchTab = [
+			[0, -1],
+			[1, -1], [1, 0],
+		];
+	}
+	return searchTab;
+}
+
+function squaresInOppositeDirection(positionBotX, positionBotY, positionOpponenetX, positionOpponenetY){
+	var searchTab = [];
+	x = positionOpponenetX - positionBotX;
+	y = positionOpponenetY - positionBotY;
+	
+	//<= ??
+	if ((x>0) && (y>0)) {
+		searchTab = [
+			[-1, -1], [-1, 0], 
+			[0, -1],
+		];
+	}
+	if ((x<0) && (y>0)) {
+		searchTab = [
+			[0, -1], [-1, 1], 
+					 [0, 1],
+		];
+	}
+	if ((x<0) && (y<0)) {
+		searchTab = [
+					[0, 1],
+			[1, 0], [1, 1],
+		];
+	}
+	if ((x>0) && (y<0)) {
+		searchTab = [
+			[0, -1],
+			[1, -1], [1, 0],
+		];
+	}
+	return searchTab;
+}
+
+/* trouver les chemin le plus court et le retourner en forme de tableau */
+function pickSquare(matrix, botPositionX, botPositionY, playerPositionX, playerPositionY) { 
+	var res = []; //tab avec les indexes du chemin
+	
+	var searchTab = squaresInDirection(botPositionX, botPositionY, playerPositionX, playerPositionY);
+	var t = 5;
+	
+	var i = 0;
+	//on commence par voir si il y a des cases vides
+	while ((i<searchTab.length) && (t != 0)) {
+		t = matrix[searchTab[i][0] + botPositionY][searchTab[i][1] + botPositionX];
+		res = [
+			t, (searchTab[i][0] + botPositionY), (searchTab[i][1] + botPositionX),
+		]
+		
+		i++;
+	}
+	if (i == searchTab.length) {
+		i = 0;
+		//si il y en a pas on cherche si il y a des obstacles destructibles
+		while ((i<searchTab.length) && (t != 2)) {
+			t = matrix[searchTab[i][0] + botPositionY][searchTab[i][1] + botPositionX];
+			res = [
+				t, (searchTab[i][0] + botPositionY), (searchTab[i][1] + botPositionX),
+			]
+			
+			i++;
+		}
+	}
+	if (i == searchTab.length) {
+		return -1;
+	}else{
+		return res;
+	}
+}
+
+function pickOpponent(bot, otherPlayers) {
+	//on choisit le plus proche? ou celui qui a le chemin le plus facil a suivre?
+	//pour l'instant je fais le plus proche
+	
+	//le premier dans l'array de joueur est le player donc on risque pas d'avoir 0 encore
+	var plyr = otherPlayers[0];
+	minDistance = getDistance(bot.position.x, otherPlayers[0].position.x, bot.position.y, otherPlayers[0].position.y);
+	for (i=1; i<otherPlayer.length; i++) {
+		if (((getDistance(bot.position.x, otherPlayers[i].position.x, bot.position.y, otherPlayers[i].position.y)) != 0) && (((getDistance(bot.position.x, otherPlayers[i].position.x, bot.position.y, otherPlayers[i].position.y))) < minDistance)) {
+			minDistance = getDistance(bot.position.x, otherPlayers[i].position.x, bot.position.y, otherPlayers[i].position.y);
+			plyr = otherPlayers[i];
+		}
+	}
+	return plyr;
+}
+
+function runAway(matrix, bot) {
+	var tabAround = searchAround(matrix, bot.position.y-0.5, bot.position.x-0.5, 3);
+	if (tabAround.lenght != 0) {
+		//si il y a plus qu'une bomb autour de lui je le laisse mourrire
+		var squares = squaresInOppositeDirection(bot.position.x-0.5, bot.position.y-0.5, tabAround[0][0], tabAround[0][1]);
+		//choisir un carré random
+		var tmp = randomValue(squares.length, 0)
+		bot.position.y = squares[tmp][0] + bot.position.y;
+		bot.position.x = squares[tmp][1] + bot.position.x;
+	}
+}
+
+function isAttackDistance(bot, opponent) {
+	distance = getDistance(bot.position.x, bot.position.y, opponent.position.x, opponent.position.y);
+	if ((distance >= 2) && (distance < 2.9)) { //2.9 ~ sqrt(8)
+		return true;
+	}else{
+		return false;
+	}
+}
+
+function botAttacks(bot, opponent, matrix) {
+	var tmp = randomValue(3, 0);
+	var squares = squaresInDirection(bot.position.x, bot.position.y, opponent.position.x, opponent.position.y);
+	if (matrix[(squares[tmp][0]) + bot.position.y][(squares[tmp][1]) + bot.position.x] == 0) {
+		matrix[(squares[tmp][0]) + bot.position.y][(squares[tmp][1]) + bot.position.x] = 3;
+	}
+}
+
+function manageBots(matrix, allBots, allPlayers) {
+	for (i=0; i<allBots.length; i++) {
+		runAway(obstacleMatrix, allBots[i]);
+		var opponent = pickOpponent(allBots[i], allPlayers);
+		if (isAttackDistance(allBots[i], opponent)) {
+			botAttacks(allBots[i], opponent);
+		}else{
+			pickSquare();
+		}
+		runAway(obstacleMatrix, allBots[i]);
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////
 
 function update(time = 0) {
 	if (player.alive) {
@@ -403,6 +583,7 @@ function update(time = 0) {
 		movingCounter += deltaTime;
 		if (movingCounter > movingInterval) {
 			managePlayer(player, obstacleMatrix);
+			manageBots(obstacleMatrix, allBots, allPlayers);
 			movingCounter = 0;
 		}
 		
